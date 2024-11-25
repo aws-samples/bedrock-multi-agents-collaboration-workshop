@@ -7,7 +7,16 @@ Please read through this document before submitting any issues or pull requests 
 information to effectively respond to your bug report or contribution.
 
 
-## Reporting Bugs/Feature Requests
+## �� Table of Contents ��
+
+- [Reporting Bugs and Feature Requests](#reporting-bugs-and-feature-requests)
+- [Contributing via Pull Requests](#contributing-via-pull-requests)
+- [Finding contributions to work on](#finding-contributions-to-work-on)
+- [Code of Conduct](#code-of-conduct)
+- [Security issue notifications](#security-issue-notifications)
+- [Licensing](#licensing)
+
+## Reporting Bugs and Feature Requests
 
 We welcome you to use the GitHub issue tracker to report bugs or suggest features.
 
@@ -21,6 +30,7 @@ reported the issue. Please try to include as much information as you can. Detail
 
 
 ## Contributing via Pull Requests
+
 Contributions via pull requests are much appreciated. Before sending us a pull request, please ensure that:
 
 1. You are working against the latest source on the *main* branch.

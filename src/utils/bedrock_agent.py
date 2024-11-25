@@ -1,3 +1,6 @@
+# Copyright 2024 Amazon.com and its affiliates; all rights reserved.
+# This file is AWS Content and may not be duplicated or distributed without permission
+
 import boto3
 import uuid
 from textwrap import dedent
