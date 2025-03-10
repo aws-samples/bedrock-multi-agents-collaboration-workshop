@@ -1,10 +1,11 @@
-Step-by-step forecast process for time-series data using scikit-learn:
+Step-by-Step Forecast Process for Time-Series Data using Python and Scikit-learn
 
 1. Import necessary libraries:
 ```python
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
@@ -12,100 +13,94 @@ import matplotlib.pyplot as plt
 
 2. Load and preprocess the data:
 ```python
-# Assuming the data is in a JSON file named 'power_data.json'
-df = pd.read_json('power_data.json', lines=True)
+# Load data from JSON file
+df = pd.read_json('data.json', lines=True)
+
+# Convert 'day' to datetime
 df['day'] = pd.to_datetime(df['day'])
-df = df.sort_values('day')
+
+# Set 'day' as index
+df.set_index('day', inplace=True)
+
+# Sort by date
+df.sort_index(inplace=True)
+
+# Create lag features
+for i in range(1, 8):
+    df[f'lag_{i}'] = df['sumPowerReading'].shift(i)
+
+# Drop rows with NaN values
+df.dropna(inplace=True)
 ```
 
-3. Feature engineering:
+3. Prepare features and target:
 ```python
-df['dayofweek'] = df['day'].dt.dayofweek
-df['month'] = df['day'].dt.month
-df['year'] = df['day'].dt.year
-```
-
-4. Prepare features and target:
-```python
-X = df[['dayofweek', 'month', 'year']]
+X = df[['lag_1', 'lag_2', 'lag_3', 'lag_4', 'lag_5', 'lag_6', 'lag_7']]
 y = df['sumPowerReading']
+
+# Split data into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+
+# Scale features
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
 ```
 
-5. Split the data into training and testing sets:
-```python
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-```
-
-6. Create and train the Random Forest model:
+4. Train the Random Forest model:
 ```python
 rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
-rf_model.fit(X_train, y_train)
+rf_model.fit(X_train_scaled, y_train)
 ```
 
-7. Make predictions on the test set:
+5. Make predictions:
 ```python
-y_pred = rf_model.predict(X_test)
+y_pred = rf_model.predict(X_test_scaled)
 ```
 
-8. Evaluate the model:
+6. Evaluate the model:
 ```python
 mse = mean_squared_error(y_test, y_pred)
 rmse = np.sqrt(mse)
 print(f"Root Mean Squared Error: {rmse}")
 ```
 
-9. Generate future dates for forecasting:
-```python
-last_date = df['day'].max()
-future_dates = pd.date_range(start=last_date + pd.Timedelta(days=1), periods=30)
-future_df = pd.DataFrame({'day': future_dates})
-future_df['dayofweek'] = future_df['day'].dt.dayofweek
-future_df['month'] = future_df['day'].dt.month
-future_df['year'] = future_df['day'].dt.year
-```
-
-10. Make predictions for future dates:
-```python
-future_predictions = rf_model.predict(future_df[['dayofweek', 'month', 'year']])
-future_df['predicted_power'] = future_predictions
-```
-
-11. Visualize the results:
+7. Visualize the results:
 ```python
 plt.figure(figsize=(12, 6))
-plt.plot(df['day'], df['sumPowerReading'], label='Historical Data')
-plt.plot(future_df['day'], future_df['predicted_power'], label='Forecast')
+plt.plot(y_test.index, y_test.values, label='Actual')
+plt.plot(y_test.index, y_pred, label='Predicted')
+plt.title('Random Forest Forecast')
 plt.xlabel('Date')
 plt.ylabel('Power Reading')
-plt.title('Power Consumption Forecast')
 plt.legend()
 plt.show()
 ```
 
-12. Analyze feature importance:
+8. Analyze feature importance:
 ```python
 feature_importance = pd.DataFrame({
     'feature': X.columns,
     'importance': rf_model.feature_importances_
 }).sort_values('importance', ascending=False)
 
-print("Feature Importance:")
 print(feature_importance)
 ```
 
 Understanding the forecasted values:
-- The Random Forest model predicts future power consumption based on the day of the week, month, and year.
-- The RMSE provides an estimate of the average prediction error in the same units as the target variable.
-- The visualization helps to compare historical data with forecasted values and identify trends or patterns.
+1. Compare the predicted values (y_pred) with the actual values (y_test) to assess the model's accuracy.
+2. The RMSE provides a measure of the average prediction error. Lower RMSE indicates better model performance.
+3. Visualize the actual vs. predicted values to identify any patterns or discrepancies in the forecast.
 
 Factors driving the forecasted values:
-- Analyze the feature importance output to understand which factors (day of week, month, or year) have the most significant impact on the predictions.
-- Higher importance values indicate stronger influence on the forecast.
-- Consider external factors not included in the model (e.g., weather, holidays) that might affect power consumption.
-- Look for seasonal patterns or trends in the visualization that might explain variations in the forecast.
+1. Examine the feature importance output to understand which lag features have the most significant impact on the predictions.
+2. The lag features with higher importance scores are the primary drivers of the forecast.
+3. Consider external factors not included in the model (e.g., weather, holidays) that might influence power consumption patterns.
+4. Analyze the model's performance during different time periods or seasons to identify any temporal patterns affecting the forecast accuracy.
 
 To improve the forecast:
-- Include additional relevant features (e.g., temperature, holidays).
-- Experiment with different algorithms or ensemble methods.
-- Use time series cross-validation for more robust model evaluation.
-- Consider using more advanced time series models like ARIMA or Prophet for comparison.
+1. Experiment with different algorithms (e.g., ARIMA, Prophet) or ensemble methods.
+2. Include additional features such as weather data, day of the week, or holidays.
+3. Try different time windows for lag features or rolling statistics.
+4. Implement cross-validation techniques to ensure model robustness.
+5. Consider using more advanced time series techniques like SARIMA or neural network-based models for complex patterns.

@@ -1579,8 +1579,10 @@ class AgentsForAmazonBedrock:
 
                         if 'modelInvocationOutput' in _route:
                             _llm_usage = _route['modelInvocationOutput']['metadata']['usage']
-                            _in_tokens = _llm_usage['inputTokens']
-                            _total_in_tokens += _in_tokens 
+                            _in_tokens = 0
+                            if 'inputTokens' in _llm_usage:
+                                _in_tokens = _llm_usage['inputTokens']
+                                _total_in_tokens += _in_tokens 
 
                             _out_tokens = _llm_usage['outputTokens']
                             _total_out_tokens += _out_tokens
@@ -1688,8 +1690,10 @@ class AgentsForAmazonBedrock:
                                 print(colored(f"---- Step {_orch_step} ----", "green"))
 
                             _llm_usage = _orch['modelInvocationOutput']['metadata']['usage']
-                            _in_tokens = _llm_usage['inputTokens']
-                            _total_in_tokens += _in_tokens 
+                            _in_tokens = 0
+                            if 'inputTokens' in _llm_usage:
+                                _in_tokens = _llm_usage['inputTokens']
+                                _total_in_tokens += _in_tokens 
 
                             _out_tokens = _llm_usage['outputTokens']
                             _total_out_tokens += _out_tokens
@@ -1706,8 +1710,10 @@ class AgentsForAmazonBedrock:
                         _pre = _event['trace']['trace']['preProcessingTrace']
                         if 'modelInvocationOutput' in _pre:
                             _llm_usage = _pre['modelInvocationOutput']['metadata']['usage']
-                            _in_tokens = _llm_usage['inputTokens']
-                            _total_in_tokens += _in_tokens 
+                            _in_tokens = 0
+                            if 'inputTokens' in _llm_usage:
+                                _in_tokens = _llm_usage['inputTokens']
+                                _total_in_tokens += _in_tokens 
 
                             _out_tokens = _llm_usage['outputTokens']
                             _total_out_tokens += _out_tokens
@@ -1721,8 +1727,10 @@ class AgentsForAmazonBedrock:
                         _post = _event['trace']['trace']['postProcessingTrace']
                         if 'modelInvocationOutput' in _post:
                             _llm_usage = _post['modelInvocationOutput']['metadata']['usage']
-                            _in_tokens = _llm_usage['inputTokens']
-                            _total_in_tokens += _in_tokens 
+                            _in_tokens = 0
+                            if 'inputTokens' in _llm_usage:
+                                _in_tokens = _llm_usage['inputTokens']
+                                _total_in_tokens += _in_tokens 
 
                             _out_tokens = _llm_usage['outputTokens']
                             _total_out_tokens += _out_tokens
